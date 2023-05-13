@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:uberbola/view/buyerLandingPage.dart';
 import 'package:uberbola/view/loginPage.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -83,7 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // The Flutter framework has been optimized to make rerunning build methods
     // fast, so that you can just rebuild anything that needs updating rather
     // than having to individually change instances of widgets.
-    return LoginPage(); /*Scaffold(
+    return BuyerLandingPage(); /*Scaffold(
       appBar: AppBar(
         // TRY THIS: Try changing the color here to a specific color (to
         // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar

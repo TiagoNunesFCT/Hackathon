@@ -3,7 +3,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uberbola/view/registerPage.dart';
 
-import 'landingPage.dart';
+import 'buyerLandingPage.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -78,7 +78,7 @@ class _LoginPageState extends State<LoginPage> {
                           
                           Navigator.popUntil(context, ModalRoute.withName('/'));
                           
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => LandingPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => BuyerLandingPage()));
                           
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'user-not-found') {

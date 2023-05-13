@@ -1,9 +1,11 @@
+import 'dart:developer';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:cloud_functions/cloud_functions.dart';
 
-import 'landingPage.dart';
+import 'buyerLandingPage.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -110,6 +112,7 @@ class _RegisterPageState extends State<RegisterPage> {
                               password: passwordController.text
                           );
 
+
                           await FirebaseAuth.instance.signInWithEmailAndPassword(
                               email: emailController.text,
                               password: passwordController.text
@@ -117,16 +120,28 @@ class _RegisterPageState extends State<RegisterPage> {
 
                           if(_type == UserType.Buyer ){
                             try {
-                              final result = await FirebaseFunctions.instance.httpsCallable('addBuyer').call();
+                              final result = await FirebaseFunctions.instance.httpsCallable('addBuyer').call(
+                                {
+                                  "mail": emailController.text
+                                }
+                              );
+                              log("Add Buyer");
                             } on FirebaseFunctionsException catch (error) {
+                              log("error buyer");
                               print(error.code);
                               print(error.details);
                               print(error.message);
                             }
                           } else {
                             try {
-                              final result = await FirebaseFunctions.instance.httpsCallable('addSeller').call();
+                              final result = await FirebaseFunctions.instance.httpsCallable('addSeller').call(
+                                  {
+                                    "mail": emailController.text
+                                  }
+                              );
+                              log("Add Seller");
                             } on FirebaseFunctionsException catch (error) {
+                              log("error buyer");
                               print(error.code);
                               print(error.details);
                               print(error.message);
@@ -136,7 +151,7 @@ class _RegisterPageState extends State<RegisterPage> {
 
                           Navigator.popUntil(context, ModalRoute.withName('/'));
 
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => LandingPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => BuyerLandingPage()));
 
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
