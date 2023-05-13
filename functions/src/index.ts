@@ -8,7 +8,7 @@
  */
 
 import { initializeApp } from "firebase-admin/app";
-
+import { HttpsError } from "firebase-functions/v1/auth";
 import { getFirestore } from "firebase-admin/firestore";
 import { auth, logger, runWith } from "firebase-functions/v1";
 
@@ -130,6 +130,7 @@ export const getAllNear = runWith({maxInstances : 3})
 
    interface BuyerOrder {
       order : ProductBuyerRequest[],
+      owner : string,
       id : string,
       status : string,
       timestamp: string
@@ -147,7 +148,7 @@ export const getAllNear = runWith({maxInstances : 3})
          const currentTS = new Date().getTime().toString()
          //Creating an order id
          const orderId = userId +":"+ currentTS
-         const buyerOrder : BuyerOrder = {order : data.requests, id : orderId, status : "pending", timestamp : currentTS}
+         const buyerOrder : BuyerOrder = {order : data.requests, owner: userId, id : orderId, status : "pending", timestamp : currentTS}
 
          const buyer = (await getFirestore().collection("users").where("uid", "==", userId).limit(1).get()).docs[0]
 
@@ -185,8 +186,8 @@ export const getAllNear = runWith({maxInstances : 3})
                     body: message
                 },
                 data: {
-                    body: JSON.stringify(newRoute(s, buyerCoordinates)),
-                    orderId: orderId
+                    body: JSON.stringify(newRoute(s.get("coordinates"), buyerCoordinates)),
+                    order: JSON.stringify(buyerOrder)
                 }
             }; 
             messaging().send(payload).then((response) => {
@@ -196,7 +197,7 @@ export const getAllNear = runWith({maxInstances : 3})
          })
    })
 
-   const newRoute = (seller: any, coordinates: [number, number]) => 
+   const newRoute = (sellerCoordinates: [number, number], coordinates: [number, number]) => 
    {
       return []
    }
@@ -247,3 +248,37 @@ const routeDistance = (route : [number, number][]) => route.slice(1).reduce(
    (acc, curr) => [(acc[0] as number) + haversine(acc[1] as [number, number], curr), curr],
    [0, route[0]]
 )[0] as number
+
+
+//Accept new buyer request function
+//Fuction called by seller upon accepting a new order
+export const acceptRequest = runWith({maxInstances : 3})
+      .https
+      .onCall(async (data, context) => {
+         //Getting order
+         const order = data.order
+
+         //Getting buyer
+         const buyer = (await getFirestore().collection("users").where("uid", "==", order.owner).limit(1).get()).docs[0]
+         //Check if order is still pending
+         const db_order = (await buyer.get("orders").where("id", "==", order.id).limit(1).get()).docs[0]
+         const order_status = db_order.status
+         if (order_status != "pending")
+            throw new HttpsError("failed-precondition", "ERROR - Order is not pending!");
+
+         db_order.ref.update({
+            "status" : "accepted"
+         })
+
+         //Getting seller coordinates
+         const sellerCoordinates: [number, number] = data.coordinates
+         //Getting route
+         const route = data.route
+         //Getting seller id
+         const sellerId = context.auth!.uid
+
+         
+         
+      })
+
+
