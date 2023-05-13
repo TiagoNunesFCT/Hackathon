@@ -134,7 +134,7 @@ export const getAllNear = runWith({maxInstances : 3})
    }
 
    interface BuyerOrder {
-      order : ProductBuyerRequest[],
+      order : ProductBuyerRequest,
       owner : string,
       id : string,
       status : string,
@@ -153,7 +153,7 @@ export const getAllNear = runWith({maxInstances : 3})
          const currentTS = new Date().getTime().toString()
          //Creating an order id
          const orderId = userEmail +":"+ currentTS
-         const buyerOrder : BuyerOrder = {order : data.requests, owner: userEmail, id : orderId, status : "pending", timestamp : currentTS}
+         const buyerOrder : BuyerOrder = {order : data.request, owner: userEmail, id : orderId, status : "pending", timestamp : currentTS}
 
          //const buyer = (await getFirestore().collection("users").where("uid", "==", userId).limit(1).get()).docs[0]
          const buyer = (await getFirestore().collection("users").doc(userEmail).get())
@@ -289,6 +289,8 @@ export const acceptRequest = runWith({maxInstances : 3})
          })
 
       })
+
+
 
 
 
