@@ -149,14 +149,14 @@ export const getAllNear = runWith({maxInstances : 3})
          const buyerCoordinates : [number, number] = data.coordinates
 
          //Getting buyer id
-         const userId = context.auth!.uid
+         const userEmail = context.auth!.token.email!
          const currentTS = new Date().getTime().toString()
          //Creating an order id
-         const orderId = userId +":"+ currentTS
-         const buyerOrder : BuyerOrder = {order : data.requests, owner: userId, id : orderId, status : "pending", timestamp : currentTS}
+         const orderId = userEmail +":"+ currentTS
+         const buyerOrder : BuyerOrder = {order : data.requests, owner: userEmail, id : orderId, status : "pending", timestamp : currentTS}
 
          //const buyer = (await getFirestore().collection("users").where("uid", "==", userId).limit(1).get()).docs[0]
-         const buyer = (await getFirestore().collection("users").doc(userId).get())
+         const buyer = (await getFirestore().collection("users").doc(userEmail).get())
 
          const reqs =  buyer.get("orders")
 
@@ -280,14 +280,16 @@ export const acceptRequest = runWith({maxInstances : 3})
          //Getting route
          const route = data.route
          //Getting seller id
-         const sellerId = context.auth!.uid
+         const sellerEmail = context.auth!.token.email!
          //Getting seller
-         const seller = (await getFirestore().collection("users").where("uid", "==", sellerId).limit(1).get()).docs[0]
+         const seller = (await getFirestore().collection("users").doc(sellerEmail).get())
          //Updating Route
          seller.ref.update({
             "route": route
          })
-         
+
       })
+
+
 
 
