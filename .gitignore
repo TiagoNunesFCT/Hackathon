@@ -31,6 +31,7 @@ migrate_working_dir/
 .pub-cache/
 .pub/
 /build/
+Frontend/build/
 
 # Symbolication related
 app.*.symbols
@@ -44,3 +45,4 @@ app.*.map.json
 /android/app/release
 
 node_modules
+/Frontend/build/
