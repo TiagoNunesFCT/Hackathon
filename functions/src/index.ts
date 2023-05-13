@@ -55,8 +55,7 @@ export const testUser = runWith({maxInstances : 3})
    })
 
 const addUser = async (uid : string, type : string) => {
-   await getFirestore().collection("users").add({
-      uid: uid,
+   await getFirestore().collection("users").doc(uid).set({
       type: type
    })
 }
@@ -97,7 +96,11 @@ export const getAllNear = runWith({maxInstances : 3})
          .where("type", "==", "seller")
          .get()
          .then( (res) => res.docs.filter(
-            ( s => inRange(buyerCoords, s.get("coordinates")))
+            ( s => {
+               logger.debug("IN FUNCT")
+               logger.debug(s)
+               return inRange(buyerCoords, s.get("coordinates"))
+            })
          ));
 
       const availableProducts = new Map<string, ProductBuyerView>()
@@ -117,8 +120,10 @@ export const getAllNear = runWith({maxInstances : 3})
          })
       })
 
+      const products = [...availableProducts.values()]
+      logger.debug(products)
       return {
-         products : [...availableProducts.values()]
+         products : products
       }
 
    })
@@ -149,9 +154,10 @@ export const getAllNear = runWith({maxInstances : 3})
          const orderId = userId +":"+ currentTS
          const buyerOrder : BuyerOrder = {order : data.requests, id : orderId, status : "pending", timestamp : currentTS}
 
-         const buyer = (await getFirestore().collection("users").where("uid", "==", userId).limit(1).get()).docs[0]
+         //const buyer = (await getFirestore().collection("users").where("uid", "==", userId).limit(1).get()).docs[0]
+         const buyer = (await getFirestore().collection("users").doc(userId).get())
 
-         const reqs = buyer.get("orders")
+         const reqs =  buyer.get("orders")
 
          buyer.ref.update({
             "orders" : [buyerOrder, ...reqs] 
@@ -198,6 +204,7 @@ export const getAllNear = runWith({maxInstances : 3})
 
    const newRoute = (seller: any, coordinates: [number, number]) => 
    {
+      bestRoute([0,0], [])
       return []
    }
 
