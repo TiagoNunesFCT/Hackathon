@@ -12,6 +12,7 @@ import { initializeApp } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
 import { auth, logger, runWith } from "firebase-functions/v1";
 
+import { messaging } from "firebase-admin";
 
 function haversine(pointA: [number, number], pointB: [number, number]): number {
    var radius = 6371; // km     
@@ -96,13 +97,13 @@ export const getAllNear = runWith({maxInstances : 3})
          .where("type", "==", "seller")
          .get()
          .then( (res) => res.docs.filter(
-            ( s => inRange(buyerCoords, s.get("coords")))
+            ( s => inRange(buyerCoords, s.get("coordinates")))
          ));
 
       const availableProducts = new Map<string, ProductBuyerView>()
 
       sellers.forEach( (s) => {
-         const distToSeller = haversine(s.get("coords"), buyerCoords)
+         const distToSeller = haversine(s.get("coordinates"), buyerCoords)
          s.get("products").forEach( (p : any) => {
             const name  : string= p.name
             const exi = availableProducts.get(name)
@@ -127,40 +128,78 @@ export const getAllNear = runWith({maxInstances : 3})
       quantity: number
    }
 
-   
+   interface BuyerOrder {
+      order : ProductBuyerRequest[],
+      id : string,
+      status : string,
+      timestamp: string
+   }
 
    export const broadcastRequest = runWith({maxInstances : 3})
       .https
       .onCall(async (data, context) => {
       // Receives BuyerCoords and array of buyers Requests   
       
-         const buyerCoords : [number, number] = data.coordinates
+         const buyerCoordinates : [number, number] = data.coordinates
 
-         const buyerRequest : ProductBuyerRequest[] = data.requests
+         //Getting buyer id
+         const userId = context.auth!.uid
+         const currentTS = new Date().getTime().toString()
+         //Creating an order id
+         const orderId = userId +":"+ currentTS
+         const buyerOrder : BuyerOrder = {order : data.requests, id : orderId, status : "pending", timestamp : currentTS}
+
+         const buyer = (await getFirestore().collection("users").where("uid", "==", userId).limit(1).get()).docs[0]
+
+         const reqs = buyer.get("orders")
+
+         buyer.ref.update({
+            "orders" : [buyerOrder, ...reqs] 
+         })
 
          //Get Sellers in range
          const sellers = await getFirestore().collection("users")
             .where("type", "==", "seller")
             .get()
             .then( (res) => res.docs.filter(
-               ( s => inRange(buyerCoords, s.get("coords")))
+               ( s => inRange(buyerCoordinates, s.get("coordinates")))
             ));
 
          //Sort Sellers by distance to buyer
          sellers.sort( (s1, s2) => {
-            const s1_dist = haversine(s1.get("coords"), buyerCoords)
-            const s2_dist = haversine(s2.get("coords"), buyerCoords)
+            const s1_dist = haversine(s1.get("coordinates"), buyerCoordinates)
+            const s2_dist = haversine(s2.get("coordinates"), buyerCoordinates)
             return s2_dist - s1_dist
          })
          //Return 10 closest sellers
 
-         sellers.slice(0, 9)
+         const closestSellers = sellers.slice(0, 9)
 
+         const message = "If you accept this request, this will be your new recommended route"
+
+         closestSellers.forEach( (s) => {
+            const payload = {
+               token: s.get("token"),
+                notification: {
+                    title: 'Additional request proposal',
+                    body: message
+                },
+                data: {
+                    body: JSON.stringify(newRoute(s, buyerCoordinates)),
+                    orderId: orderId
+                }
+            }; 
+            messaging().send(payload).then((response) => {
+               console.log("Successfuly sent message:", response);
+               
+            })
+         })
    })
 
-   const newRoute = (seller: any, coords: [number, number]) => 
+   const newRoute = (seller: any, coordinates: [number, number]) => 
    {
       return []
    }
+
 
 
