@@ -122,4 +122,49 @@ export const getAllNear = runWith({maxInstances : 3})
 
    })
 
+interface OrderRequest {
+   coordinates : [number, number]
+}
 
+const permutations = (arr : any[]) : any[] =>{
+   if (arr.length <= 2) return arr.length === 2 ? [arr, [arr[1], arr[0]]] : arr;
+   return arr.reduce(
+     (acc, item, i) =>
+       acc.concat(
+         permutations([...arr.slice(0, i), ...arr.slice(i + 1)]).map((val) => [
+           item,
+           ...val,
+         ])
+       ),
+     []
+   );
+ };
+
+const bestRoute = ( seller_coords : [number, number], requests: OrderRequest[] ) => {
+
+   const full  : [number,number][] = [seller_coords, ...requests.map( r => r.coordinates)]
+   const perms = permutations(full)
+   
+   const res = minDistance(perms);
+   const bestRouteIndex = res[1]
+   const bestRout = perms[bestRouteIndex]
+   
+   return bestRout
+   
+}
+
+const minDistance = (routes :  [number, number][][] ) => routes.reduce(
+   (acc, curr, index) => {
+      const dist = routeDistance(curr)
+      const currentMin = acc[0]
+      if(currentMin > dist)
+         return [dist, index]
+      else 
+         return acc
+   }, [-1, -1]
+)
+
+const routeDistance = (route : [number, number][]) => route.slice(1).reduce(
+   (acc, curr) => [(acc[0] as number) + haversine(acc[1] as [number, number], curr), curr],
+   [0, route[0]]
+)[0] as number
