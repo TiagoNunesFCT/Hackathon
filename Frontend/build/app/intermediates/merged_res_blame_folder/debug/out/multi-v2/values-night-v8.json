@@ -1,10 +1,10 @@
 {
     "logs": [
         {
-            "outputFile": "com.example.uberbola.app-mergeDebugResources-9:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.example.uberbola.app-mergeDebugResources-13:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
-                    "source": "C:\\Users\\Tiago\\AndroidStudioProjects\\UberBola\\Frontend\\android\\app\\src\\main\\res\\values-night\\styles.xml",
+                    "source": "D:\\AndroidStudioProjects\\Hackathon\\Frontend\\android\\app\\src\\main\\res\\values-night\\styles.xml",
                     "from": {
                         "startLines": "3,14",
                         "startColumns": "4,4",

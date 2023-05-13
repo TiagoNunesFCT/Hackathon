@@ -1,4 +1,4 @@
-#Fri May 12 21:49:44 WEST 2023
-base.0=C\:\\Users\\Tiago\\AndroidStudioProjects\\UberBola\\Frontend\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
-path.0=classes.dex
+#Sat May 13 10:13:37 BST 2023
+base.0=D\:\\AndroidStudioProjects\\Hackathon\\Frontend\\build\\app\\intermediates\\dex\\debug\\mergeDexDebug\\classes.dex
 renamed.0=classes.dex
+path.0=classes.dex
