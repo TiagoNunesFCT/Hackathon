@@ -3,8 +3,8 @@ com.example.uberbola.app-jetified-play-services-basement-18.1.0-1 C:\Users\Andr�
 com.example.uberbola.app-jetified-annotation-experimental-1.1.0-2 C:\Users\André\.gradle\caches\transforms-3\6c0c163cc77ae6c91f9f7dfcd179c29c\transformed\jetified-annotation-experimental-1.1.0\res
 com.example.uberbola.app-browser-1.4.0-3 C:\Users\André\.gradle\caches\transforms-3\6d3bbaf4594b8ed85e4722883be764b3\transformed\browser-1.4.0\res
 com.example.uberbola.app-jetified-firebase-common-20.3.2-4 C:\Users\André\.gradle\caches\transforms-3\6e10d488ebcc23afefc866560645fd3c\transformed\jetified-firebase-common-20.3.2\res
-com.example.uberbola.app-core-1.6.0-5 C:\Users\André\.gradle\caches\transforms-3\7e9df2ac2213a6bd3cef0f2f27870d79\transformed\core-1.6.0\res
-com.example.uberbola.app-jetified-play-services-base-17.1.0-6 C:\Users\André\.gradle\caches\transforms-3\aa986e5c30d873ea872271e4903235ad\transformed\jetified-play-services-base-17.1.0\res
+com.example.uberbola.app-jetified-play-services-base-18.1.0-5 C:\Users\André\.gradle\caches\transforms-3\781e5567158e59d38ee2b89930f9808b\transformed\jetified-play-services-base-18.1.0\res
+com.example.uberbola.app-core-1.6.0-6 C:\Users\André\.gradle\caches\transforms-3\7e9df2ac2213a6bd3cef0f2f27870d79\transformed\core-1.6.0\res
 com.example.uberbola.app-jetified-window-java-1.0.0-beta04-7 C:\Users\André\.gradle\caches\transforms-3\ae81e06d24c799147c26814497a2a305\transformed\jetified-window-java-1.0.0-beta04\res
 com.example.uberbola.app-debug-8 D:\AndroidStudioProjects\Hackathon\Frontend\android\app\src\debug\res
 com.example.uberbola.app-main-9 D:\AndroidStudioProjects\Hackathon\Frontend\android\app\src\main\res
@@ -14,5 +14,6 @@ com.example.uberbola.app-rs-12 D:\AndroidStudioProjects\Hackathon\Frontend\build
 com.example.uberbola.app-mergeDebugResources-13 D:\AndroidStudioProjects\Hackathon\Frontend\build\app\intermediates\incremental\debug\mergeDebugResources\merged.dir
 com.example.uberbola.app-mergeDebugResources-14 D:\AndroidStudioProjects\Hackathon\Frontend\build\app\intermediates\incremental\debug\mergeDebugResources\stripped.dir
 com.example.uberbola.app-merged_res-15 D:\AndroidStudioProjects\Hackathon\Frontend\build\app\intermediates\merged_res\debug
-com.example.uberbola.app-packaged_res-16 D:\AndroidStudioProjects\Hackathon\Frontend\build\firebase_auth\intermediates\packaged_res\debug
-com.example.uberbola.app-packaged_res-17 D:\AndroidStudioProjects\Hackathon\Frontend\build\firebase_core\intermediates\packaged_res\debug
+com.example.uberbola.app-packaged_res-16 D:\AndroidStudioProjects\Hackathon\Frontend\build\cloud_functions\intermediates\packaged_res\debug
+com.example.uberbola.app-packaged_res-17 D:\AndroidStudioProjects\Hackathon\Frontend\build\firebase_auth\intermediates\packaged_res\debug
+com.example.uberbola.app-packaged_res-18 D:\AndroidStudioProjects\Hackathon\Frontend\build\firebase_core\intermediates\packaged_res\debug

@@ -1,6 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:cloud_functions/cloud_functions.dart';
+
+import 'landingPage.dart';
 
 class RegisterPage extends StatefulWidget {
   const RegisterPage({Key? key}) : super(key: key);
@@ -15,6 +18,7 @@ class _RegisterPageState extends State<RegisterPage> {
   TextEditingController emailController = TextEditingController();
   TextEditingController passwordController = TextEditingController();
   UserType? _type = UserType.Buyer;
+  final functions = FirebaseFunctions.instance;
 
   @override
   Widget build(BuildContext context) {
@@ -105,6 +109,30 @@ class _RegisterPageState extends State<RegisterPage> {
                               email: emailController.text,
                               password: passwordController.text
                           );
+
+                          await FirebaseAuth.instance.signInWithEmailAndPassword(
+                              email: emailController.text,
+                              password: passwordController.text
+                          );
+
+                          if(_type == UserType.Buyer ){
+                            try {
+                              final result = await FirebaseFunctions.instance.httpsCallable('addBuyer').call();
+                            } on FirebaseFunctionsException catch (error) {
+                              print(error.code);
+                              print(error.details);
+                              print(error.message);
+                            }
+                          } else {
+                            try {
+                              final result = await FirebaseFunctions.instance.httpsCallable('addSeller').call();
+                            } on FirebaseFunctionsException catch (error) {
+                              print(error.code);
+                              print(error.details);
+                              print(error.message);
+                            }
+                          }
+
 
                           Navigator.popUntil(context, ModalRoute.withName('/'));
 

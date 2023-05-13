@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:uberbola/view/registerPage.dart';
 
 import 'landingPage.dart';
 
@@ -92,7 +93,19 @@ class _LoginPageState extends State<LoginPage> {
                         );
                       }
                     },
-                    child: const Text('Submit'),
+                    child: const Text('Sign in'),
+                  ),
+                ),
+              ),
+              Padding(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => RegisterPage()));
+                    },
+                    child: const Text('Register'),
                   ),
                 ),
               ),
