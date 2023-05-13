@@ -262,7 +262,7 @@ export const acceptRequest = runWith({maxInstances : 3})
          const buyer = (await getFirestore().collection("users").where("uid", "==", order.owner).limit(1).get()).docs[0]
          //Check if order is still pending
          const db_order = (await buyer.get("orders").where("id", "==", order.id).limit(1).get()).docs[0]
-         const order_status = db_order.status
+         const order_status = db_order.get("status")
          if (order_status != "pending")
             throw new HttpsError("failed-precondition", "ERROR - Order is not pending!");
 
@@ -270,14 +270,16 @@ export const acceptRequest = runWith({maxInstances : 3})
             "status" : "accepted"
          })
 
-         //Getting seller coordinates
-         const sellerCoordinates: [number, number] = data.coordinates
          //Getting route
          const route = data.route
          //Getting seller id
          const sellerId = context.auth!.uid
-
-         
+         //Getting seller
+         const seller = (await getFirestore().collection("users").where("uid", "==", sellerId).limit(1).get()).docs[0]
+         //Updating Route
+         seller.ref.update({
+            "route": route
+         })
          
       })
 
