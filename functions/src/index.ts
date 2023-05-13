@@ -122,6 +122,47 @@ export const getAllNear = runWith({maxInstances : 3})
 
    })
 
+   interface ProductBuyerRequest {
+      name: string,
+      quantity: number
+   }
+
+   
+
+   export const broadcastRequest = runWith({maxInstances : 3})
+      .https
+      .onCall(async (data, context) => {
+      // Receives BuyerCoords and array of buyers Requests   
+      
+         const buyerCoords : [number, number] = data.coordinates
+
+         const buyerRequest : ProductBuyerRequest[] = data.requests
+
+         //Get Sellers in range
+         const sellers = await getFirestore().collection("users")
+            .where("type", "==", "seller")
+            .get()
+            .then( (res) => res.docs.filter(
+               ( s => inRange(buyerCoords, s.get("coords")))
+            ));
+
+         //Sort Sellers by distance to buyer
+         sellers.sort( (s1, s2) => {
+            const s1_dist = haversine(s1.get("coords"), buyerCoords)
+            const s2_dist = haversine(s2.get("coords"), buyerCoords)
+            return s2_dist - s1_dist
+         })
+         //Return 10 closest sellers
+
+         sellers.slice(0, 9)
+
+   })
+
+   const newRoute = (seller: any, coords: [number, number]) => 
+   {
+      return []
+   }
+
 interface OrderRequest {
    coordinates : [number, number]
 }
