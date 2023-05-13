@@ -263,12 +263,12 @@ export const acceptRequest = runWith({maxInstances : 3})
       .https
       .onCall(async (data, context) => {
          //Getting order
-         const order = data.order
+         const order : BuyerOrder = data.order
 
          //Getting buyer
-         const buyer = (await getFirestore().collection("users").where("uid", "==", order.owner).limit(1).get()).docs[0]
+         const buyer = (await getFirestore().collection("users").doc(order.id).get())
          //Check if order is still pending
-         const db_order = (await buyer.get("orders").where("id", "==", order.id).limit(1).get()).docs[0]
+         const db_order = buyer.get("orders").find( (o : any) => o.get("id") == order.id)
          const order_status = db_order.get("status")
          if (order_status != "pending")
             throw new HttpsError("failed-precondition", "ERROR - Order is not pending!");
