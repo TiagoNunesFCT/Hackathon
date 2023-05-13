@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
@@ -90,7 +91,38 @@ class _RegisterPageState extends State<RegisterPage> {
                     ),
                   ],
                   ),
-              )
+              ),
+              Padding(
+                padding:
+                const EdgeInsets.symmetric(horizontal: 8, vertical: 16.0),
+                child: Center(
+                  child: ElevatedButton(
+                    onPressed: () async {
+                      if (_formKey.currentState!.validate()) {
+                        // Navigate the user to the Home page
+                        try {
+                          final credential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+                              email: emailController.text,
+                              password: passwordController.text
+                          );
+
+                          Navigator.popUntil(context, ModalRoute.withName('/'));
+
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => LandingPage()));
+
+                        } on FirebaseAuthException catch (e) {
+                          if (e.code == 'weak-password') {
+                            print('The password provided is too weak.');
+                          } else if (e.code == 'email-already-in-use') {
+                            print('The account already exists for that email.');
+                          }
+                        }
+                      }
+                    },
+                    child: const Text('Submit'),
+                  ),
+                ),
+              ),
             ],
           ),
         )
