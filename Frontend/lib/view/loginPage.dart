@@ -2,8 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:uberbola/view/registerPage.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
-import 'landingPage.dart';
+import 'buyerLandingPage.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -75,10 +76,21 @@ class _LoginPageState extends State<LoginPage> {
                               email: emailController.text,
                               password: passwordController.text
                           );
+
+                          FirebaseFirestore db = FirebaseFirestore.instance;
+
+                          //check if user is buyer or seller
+                          DocumentSnapshot snapshot = await db.collection('users').doc(credential.user!.uid).get();
+                          if(snapshot['type'] == 'buyer'){
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => LandingPage()));
+                          }else{
+                            Navigator.push(context, MaterialPageRoute(builder: (context) => LandingPage()));
+                          }
+
                           
                           Navigator.popUntil(context, ModalRoute.withName('/'));
                           
-                          Navigator.push(context, MaterialPageRoute(builder: (context) => LandingPage()));
+                          Navigator.push(context, MaterialPageRoute(builder: (context) => BuyerLandingPage()));
                           
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'user-not-found') {
