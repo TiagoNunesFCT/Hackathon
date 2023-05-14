@@ -46,3 +46,4 @@ app.*.map.json
 
 node_modules
 /Frontend/build/
+functions/src/index.ts
