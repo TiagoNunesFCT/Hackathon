@@ -31,6 +31,15 @@ function haversine(pointA: [number, number], pointB: [number, number]): number {
    return radius * angularDistance;
 }
 
+export const addToken = runWith({maxInstances : 3})
+.https
+.onCall((data, context) => {
+   const tok = data.token
+   const userId = context.auth?.token.email!
+   getFirestore().collection("users").doc(userId).update({
+      deviceToken : tok
+   })
+})
 
 
 //import haversine = require('haversine');
@@ -54,27 +63,52 @@ export const testUser = runWith({maxInstances : 3})
       response.send(auth.user.name)
    })
 
-const addUser = async (uid : string, type : string) => {
-   await getFirestore().collection("users").doc(uid).set({
-      type: type
-   })
-}
+
 
 
 export const addSeller = runWith({maxInstances : 3})
 .https
-.onCall((data, context) => {
+.onCall(async (data, context) => {
    const userId = data.mail 
    logger.debug(userId)
-   addUser(userId, "seller")
+   await getFirestore().collection("users").doc(userId).set({
+      type: "seller",
+      coordinates : [0,0],
+      products : [
+         {
+            "name" : "Bola de Berlim",
+            "quantity" : 0
+         },
+         {
+            "name" : "Bola de Nutella",
+            "quantity" : 0
+         },
+         {
+            "name" : "Gelado de Chocolate",
+            "quantity" : 0
+         },
+         {
+            "name" : "Brownie",
+            "quantity" : 0
+         },
+         {
+            "name" : "Bola de Berlim sem creme",
+            "quantity" : 0
+         }
+      ]
+   })
 })
 
 export const addBuyer = runWith({maxInstances : 3})
 .https
-.onCall((data, context) => {
+.onCall(async (data, context) => {
    const userId = data.mail 
    logger.debug(userId)
-   addUser(userId, "buyer")
+   await getFirestore().collection("users").doc(userId).set({
+      type: "buyer",
+      coordinates : [0,0],
+      orders : []
+   })
 })
 
 const inRange = (coords1 : [number, number], coords2 : [number, number]) : boolean =>
@@ -85,6 +119,31 @@ interface ProductBuyerView {
    price : string,
    minDistance : number
 }
+
+export const testMessage = 
+      runWith({maxInstances : 3})
+      .https
+      .onCall(async (data, context) => {
+
+         const userId = context.auth!.token.email!
+         const fcmtok = (await getFirestore().collection("users").doc(userId).get()).get("deviceToken")
+
+         const payload = {
+            token: fcmtok,
+            notification: {
+               title: 'Additional request proposal',
+               body: "TELL ME WHY"
+            },
+            data: {
+               body: "THIS BETTER COME THROUGH"
+            }
+         }; 
+         messaging().send(payload).then((response) => {
+            console.log("Successfuly sent message:", response);
+            
+         })
+      })
+
 
 
 export const getAllNear = runWith({maxInstances : 3})
@@ -153,16 +212,13 @@ export const getAllNear = runWith({maxInstances : 3})
          const currentTS = new Date().getTime().toString()
          //Creating an order id
          const orderId = userId +":"+ currentTS
-         const buyerOrder : BuyerOrder = {order : data.requests, owner: userId, id : orderId, status : "pending", timestamp : currentTS}
+         const buyerOrder : BuyerOrder = {order : data.requests, owner: userId, id : orderId, status : "pending", timestamp : currentTS};
 
          //const buyer = (await getFirestore().collection("users").where("uid", "==", userId).limit(1).get()).docs[0]
-         const buyer = (await getFirestore().collection("users").doc(userId).get())
 
-         const reqs =  buyer.get("orders")
-
-         buyer.ref.update({
-            "orders" : [buyerOrder, ...reqs] 
-         })
+         (await getFirestore().collection("users").doc(userId)
+                           .collection("orders").doc(orderId).set(buyerOrder))
+         
 
          //Get Sellers in range
          const sellers = await getFirestore().collection("users")
